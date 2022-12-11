@@ -14,3 +14,4 @@ use App\Http\Controllers\TodoController;
 */
 
 Route::get('/', [TodoController::class, 'index']);
+Route::post('/todo-new', [TodoController::class, 'create'])->name('todo.new');
