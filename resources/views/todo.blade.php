@@ -78,11 +78,10 @@
                     <label for="todo-description" class="mt-1">Descrição</label>
                     <textarea id="todo-description" name="description" type="text" placeholder="Descrição da tarefa"></textarea>
                   </div>
-                  <label for="todo-tasks">Tarefas</label><br>
                   <label for="todo-difficulty" class="mt-1">Dificuldade</label><br>
                   <select name="todo-difficulty" id="todo-difficulty">
                     <option value="0">Fácil</option>
-                    <option value="1" selected>Médio</option>
+                    <option value="1">Médio</option>
                     <option value="2">Difícil</option>
                   </select>
                 </form>
