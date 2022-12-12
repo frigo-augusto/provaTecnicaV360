@@ -51,8 +51,8 @@
             <input name="_token" type="hidden" value="{{ csrf_token() }}"/>
             <div class="form-group row">
                 <input type="hidden" id="todo_id" name="todo_id">
-                <label for="todo-title" class="mt-1">Título</label>
-                <input id="todo-title" name="title" type="text" placeholder="Tarefa 1">
+                <label for="task-title" class="mt-1">Título</label>
+                <input id="task-title" name="title" type="text" placeholder="Tarefa 1">
             </div>
             </form>
         </div>
