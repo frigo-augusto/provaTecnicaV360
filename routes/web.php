@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TodoController;
+use App\Http\Controllers\TasksController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,4 +16,4 @@ use App\Http\Controllers\TodoController;
 
 Route::get('/', [TodoController::class, 'index']);
 Route::post('/todo-new', [TodoController::class, 'create'])->name('todo.new');
-Route::post('/task-new', [TaskController::class, 'create'])->name('task.new');
+Route::post('/task-new', [TasksController::class, 'create'])->name('task.new');

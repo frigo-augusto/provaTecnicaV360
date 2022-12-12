@@ -19,7 +19,7 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand m-2" href="#">Navbar</a>
+            <a class="navbar-brand m-2" href="#">Gerenciador de tarefas</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -27,7 +27,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
+                        <a class="nav-link" href="#">Home<span class="sr-only"></span></a>
                     </li>
                 </ul>
             </div>
@@ -46,14 +46,14 @@
               @foreach ($todos as $todo)
                 <div class="m-3 border border-primary">
                   <div>
-                    <div class= "d-flex flex-row justify-content-between">
+                    <div class= "d-flex flex-row justify-content-between m-2">
                       <div>
                         <input type="checkbox" @php if ($todo->completed){echo "checked";} @endphp>
                         {{$todo->title}}
                       </div>
                       <div>
-                        <button class="btn btn-primary">Excluir</button>
-                        <button class="btn btn-primary" data-toggle=modal data-target="#newTaskModal">+</button>
+                        <button class="btn btn-primary" todoId="{{$todo->id}}">Excluir</button>
+                        <button class="btn btn-primary new-task-button" todoId="{{$todo->id}}" data-toggle="modal" data-target="#newTaskModal">+</button>
                       </div>
                     </div>
                   </div>
@@ -66,7 +66,7 @@
                             {{$task->title}}
                           </div>
                           <div>
-                            <button class="btn btn-primary m-4">Excluir</button>
+                            <button class="btn btn-primary m-4" taskId="{{$task->id}}">Excluir</button>
                           </div>
                         </div>
                       @endforeach
@@ -128,6 +128,7 @@
                 <form method="POST" action="{{route('task.new')}}" id="create-task-form">
                   <input name="_token" type="hidden" value="{{ csrf_token() }}"/>
                   <div class="form-group row">
+                    <input type="text" id="todo_id" name="todo_id"> <!-- change to hidden-->
                     <label for="todo-title" class="mt-1">Título</label>
                     <input id="todo-title" name="title" type="text" placeholder="Tarefa 1">
                   </div>
@@ -143,6 +144,8 @@
         
     </body>
     <script>
+      let nextTodoId = null;
+      let nextTaskId = null;
         $("#todo-form").submit(function(e) {
           //e.preventDefault();
           buildNewTodo();
@@ -153,5 +156,16 @@
             "lorem ipsum dolor"
           );
         }
+
+        $(".new-task-button").click(function(e){
+          nextTodoId = $(this).attr('todoId');
+        });
+
+        $("#create-task-form").submit(function(e){
+          $("#todo_id").val(nextTodoId);
+        });
+
+
+
     </script>
 </html>
