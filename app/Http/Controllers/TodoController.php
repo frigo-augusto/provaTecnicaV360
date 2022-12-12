@@ -3,14 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Todo;
 
 class TodoController extends Controller
 {
     public function index(){
-        return view('todo');
+        $todos = Todo::all();
+        return view('todo', ["todos" => $todos]);
     }
 
-    public function create(){
-        
+    public function create(Request $request){
+        $todo = new Todo();
+        $todo->title = $request->title;
+        $todo->description = $request->description;
+        $todo->difficulty = $request->difficulty;
+        $todo->completed = false;
+        $todo->save();
     }
 }

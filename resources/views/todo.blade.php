@@ -14,14 +14,7 @@
 
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <style>
-            #main-section{
-                max-width: 300px;
-            }
-
-            #todo-header{
-                margin-left: auto;
-                margin-right: 50;
-            }
+          
         </style>
     </head>
     <body>
@@ -34,27 +27,54 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
                     </li>
                 </ul>
             </div>
         </nav>
 
-        <main class= "m-5">
-            <section id="main-section" class="d-flex flex-column">
-                Todo
-                <div id="todo-header" class= "mb-3">
-                    <button class="btn btn-primary mr-5" data-toggle="modal" data-target="#newTodoModal">+</button>
-                </div>
-                <div id="todo-container" class="d-flex ">
-                  <div id="todo-1">
-
+        <main class= "m-5 border d-flex flex-column border-primary w-50">
+          <div id="todo-header" class= "d-flex flex-row justify-content-between" >
+            <div class="m-3">
+              Lista de Afazeres
+            </div>
+            <div class="m-3">
+              <button class="btn btn-primary mr-5" data-toggle="modal" data-target="#newTodoModal">+</button>
+            </div>
+          </div>
+          <section id="todo-container" class="d-flex flex-column w-100 mt-3">
+              @foreach ($todos as $todo)
+                <div class="m-3 border border-primary">
+                  <div>
+                    <div class= "d-flex flex-row justify-content-between">
+                      <div>
+                        <input type="checkbox" @php if ($todo->completed){echo "checked";} @endphp>
+                        {{$todo->title}}
+                      </div>
+                      <div>
+                        <button class="btn btn-primary">Excluir</button>
+                        <button class="btn btn-primary" data-toggle=modal data-target="#newTaskModal">+</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="d-flex flex-column border border-success m-3">
+                      @foreach ($todo->tasks as $task)
+                        <div class="d-flex flex-row justify-content-between">
+                          <div>
+                            <input type="checkbox" @php if ($task->completed){echo "checked";} @endphp>
+                            {{$task->title}}
+                          </div>
+                          <div>
+                            <button class="btn btn-primary m-4">Excluir</button>
+                          </div>
+                        </div>
+                      @endforeach
+                    </div>
                   </div>
                 </div>
-            </section>
+              @endforeach
+          </section>
         </main>
 
         <!-- Modal Todo -->
@@ -68,7 +88,7 @@
                 </button>
               </div>
               <div class="modal-body">
-                <form method="POST" action="{{route('todo.new')}}" id="todo-form">
+                <form method="POST" action="{{route('todo.new')}}" id="create-todo-form">
                   <input name="_token" type="hidden" value="{{ csrf_token() }}"/>
                   <div class="form-group row">
                     <label for="todo-title" class="mt-1">Título</label>
@@ -79,7 +99,7 @@
                     <textarea id="todo-description" name="description" type="text" placeholder="Descrição da tarefa"></textarea>
                   </div>
                   <label for="todo-difficulty" class="mt-1">Dificuldade</label><br>
-                  <select name="todo-difficulty" id="todo-difficulty">
+                  <select name="difficulty" id="todo-difficulty">
                     <option value="0">Fácil</option>
                     <option value="1">Médio</option>
                     <option value="2">Difícil</option>
@@ -88,7 +108,34 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="submit" form="todo-form" class="btn btn-primary">Salvar</button>
+                <button type="submit" form="create-todo-form" class="btn btn-primary">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Task -->
+        <div class="modal fade" id="newTaskModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Criar nova task</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{{route('task.new')}}" id="create-task-form">
+                  <input name="_token" type="hidden" value="{{ csrf_token() }}"/>
+                  <div class="form-group row">
+                    <label for="todo-title" class="mt-1">Título</label>
+                    <input id="todo-title" name="title" type="text" placeholder="Tarefa 1">
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="submit" form="create-task-form" class="btn btn-primary">Salvar</button>
               </div>
             </div>
           </div>
@@ -97,7 +144,7 @@
     </body>
     <script>
         $("#todo-form").submit(function(e) {
-          e.preventDefault();
+          //e.preventDefault();
           buildNewTodo();
         });
 
