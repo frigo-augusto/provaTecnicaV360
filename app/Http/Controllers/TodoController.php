@@ -21,4 +21,10 @@ class TodoController extends Controller
         $todo->save();
         return $todo;
     }
+
+    public function completedChange(Request $request){
+        $todo = Todo::find($request->id);
+        $todo->completed = !$todo->completed;
+        $todo->save();
+    }
 }

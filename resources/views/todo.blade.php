@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}"/>
 
         <title>Prova Técnica V360</title>
       
@@ -10,6 +11,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
         <style>
           
         </style>
@@ -45,7 +47,7 @@
                   <div>
                     <div class= "d-flex flex-row justify-content-between m-2">
                       <div class="d=flex flex-row">
-                        <input type="checkbox" @php if ($todo->completed){echo "checked";} @endphp>
+                        <input type="checkbox" @php if ($todo->completed){echo "checked";} @endphp todoId="{{@$todo->id}}" class="todo-checkbox">
                         {{$todo->title}}
                         <div>
                           {{$todo->description}}
@@ -75,7 +77,7 @@
                       @foreach ($todo->tasks as $task)
                         <div class="d-flex flex-row justify-content-between">
                           <div>
-                            <input type="checkbox" @php if ($task->completed){echo "checked";} @endphp>
+                            <input type="checkbox" @php if ($task->completed){echo "checked";} @endphp taskId={{@$task->id}} class="task-checkbox">
                             {{$task->title}}
                           </div>
                           <div>
@@ -159,6 +161,12 @@
     <script>
       let nextTodoId = null;
       let nextTaskId = null;
+
+      $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
       
 
         function clearTodoFields(){
@@ -201,7 +209,7 @@
                   <div>
                     <div class= "d-flex flex-row justify-content-between m-2">
                       <div class="d=flex flex-row">
-                        <input type="checkbox">` +
+                        <input type="checkbox" todoId=` + response.id +`class="todo-checkbox">` +
                         response.title +
                         `<div>` +
                           response.description +
@@ -228,7 +236,7 @@
           $("#tasks-todo-" + nextTodoId + "-container").append(
             `<div class="d-flex flex-row justify-content-between">
               <div>
-                <input type="checkbox">`+
+                <input type="checkbox" taskId=` + response.id + `class="task-checkbox">`+
                 response.title +
               `</div>
               <div>
@@ -255,9 +263,30 @@
               type: $(this).attr('method'), 
               url: $(this).attr('action'), 
           });
-          console.log(response.title);
           buildNewTask(response);
           clearTaskFields();
+        });
+
+        $(".todo-checkbox").click(function (e){
+          var id = $(this).attr("todoId")
+          $.ajax({
+            data: {
+              id: id
+            },
+            type: 'POST',
+            url: "{{route('todo.completed.change')}}"
+          })
+        });
+
+        $(".task-checkbox").click(function(e){
+          var id = $(this).attr("taskId");
+          $.ajax({
+            data: {
+              id: id
+            },
+            type: 'POST',
+            url: "{{route('task.completed.change')}}"
+          })
         });
 
 

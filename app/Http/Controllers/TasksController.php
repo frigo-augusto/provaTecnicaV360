@@ -16,4 +16,10 @@ class TasksController extends Controller
         $task->save();
         return $task;
     }
+
+    public function completedChange(Request $request){
+        $task = Tasks::find($request->id);
+        $task->completed = !$task->completed;
+        $task->save();
+    }
 }
