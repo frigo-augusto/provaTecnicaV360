@@ -239,14 +239,14 @@
                 response.title +
               `</div>
               <div>
-                <button class="btn btn-primary m-4" taskId=`+ response.id +`>Excluir</button>
+                <button class="btn btn-primary m-4 delete-task-button" taskId=`+ response.id +`>Excluir</button>
               </div>
             </div>`
           );
           console.log("aaaaaaaaa");
         }
 
-        $(".new-task-button").on("click", function(e){
+        $(document).on("click", ".new-task-button", function(e){
           nextTodoId = $(this).attr('todoId');
         });
 
@@ -267,7 +267,7 @@
           clearTaskFields();
         });
 
-        $(".todo-checkbox").on("click", function (e){
+        $(document).on("click", ".todo-checkbox", function (e){
           var id = $(this).attr("todoId")
           $.ajax({
             data: {
@@ -278,7 +278,7 @@
           })
         });
 
-        $(".task-checkbox").on("click", function(e){
+        $(document).on("click", ".task-checkbox", function(e){
           var id = $(this).attr("taskId");
           $.ajax({
             data: {
@@ -289,8 +289,9 @@
           })
         });
 
-        $(".delete-todo-button").on("click", function(e){
+        $(document).on("click", ".delete-todo-button", function(e){
           var id = $(this).attr("todoId");
+          console.log(id);
           $.ajax({
             data: {
               id: id
@@ -301,8 +302,10 @@
           $("#todo-" + id + "-container").remove();
         });
 
-        $(".delete-task-button").on("click", function(e){
+        $(document).on("click", ".delete-task-button", function(e){
+          console.log("aaaaaaa");
           var id = $(this).attr("taskId");
+          console.log(id);
           $.ajax({
             data: {
               id: id
