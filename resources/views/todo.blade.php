@@ -71,9 +71,9 @@
                     </div>
                   </div>
                   <div>
-                    <div class="d-flex flex-column border border-success m-3" id="tasks-container">
+                    <div class="d-flex flex-column border border-success m-3" id="tasks-todo-{{@$todo->id}}-container">
                       @foreach ($todo->tasks as $task)
-                        <div id="task-{{@$task->id}}-container" class="d-flex flex-row justify-content-between">
+                        <div class="d-flex flex-row justify-content-between">
                           <div>
                             <input type="checkbox" @php if ($task->completed){echo "checked";} @endphp>
                             {{$task->title}}
@@ -164,7 +164,7 @@
         function clearTodoFields(){
           $("#todo-difficulty").val("0");
           $("#todo-title").val("");
-          $("todo-description").val("");
+          $("#todo-description").val("");
         }
 
         $('#create-todo-form').submit(async function(e) {
@@ -216,28 +216,48 @@
                     </div>
                   </div>
                   <div>
-                    <div class="d-flex flex-column border border-success m-3" id="tasks-container">
+                    <div class="d-flex flex-column border border-success m-3" id="tasks-todo-` + response.id + `-container">
                     </div>
                   </div>
                 </div>`
           );
         }
 
+        function buildNewTask(response){
+          console.log(nextTodoId);
+          $("#tasks-todo-" + nextTodoId + "-container").append(
+            `<div class="d-flex flex-row justify-content-between">
+              <div>
+                <input type="checkbox">`+
+                response.title +
+              `</div>
+              <div>
+                <button class="btn btn-primary m-4" taskId=`+ response.id +`>Excluir</button>
+              </div>
+            </div>`
+          )
+        }
+
         $(".new-task-button").click(function(e){
           nextTodoId = $(this).attr('todoId');
         });
 
-        $("#create-task-form").submit(function(e){
+        function clearTaskFields(){
+          $("#todo-id").val("");
+          $("#todo-title").val("");
+        }
+
+        $("#create-task-form").submit(async function(e){
+          e.preventDefault();
           $("#todo_id").val(nextTodoId);
-          $.ajax({
+          response = await $.ajax({
               data: $(this).serialize(),
               type: $(this).attr('method'), 
               url: $(this).attr('action'), 
-              success: function(response) { 
-                  console.log(response);
-              }
           });
-          return false;
+          console.log(response.title);
+          buildNewTask(response);
+          clearTaskFields();
         });
 
 
