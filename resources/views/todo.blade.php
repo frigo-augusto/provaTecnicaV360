@@ -7,12 +7,9 @@
         <title>Prova Técnica V360</title>
       
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-                
-
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <style>
           
         </style>
@@ -44,12 +41,28 @@
           </div>
           <section id="todo-container" class="d-flex flex-column w-100 mt-3">
               @foreach ($todos as $todo)
-                <div class="m-3 border border-primary">
+                <div id="todo-{{@$todo->id}}-container" class="m-3 border border-primary">
                   <div>
                     <div class= "d-flex flex-row justify-content-between m-2">
-                      <div>
+                      <div class="d=flex flex-row">
                         <input type="checkbox" @php if ($todo->completed){echo "checked";} @endphp>
                         {{$todo->title}}
+                        <div>
+                          {{$todo->description}}
+                        </div>
+                        <div>
+                          @switch($todo->difficulty)
+                              @case(0)
+                                @php echo "Fácil"; @endphp
+                                @break
+                              @case(1)
+                                @php echo "Médio"; @endphp
+                                @break
+                              @case(2)
+                                @php echo "Difícil"; @endphp
+                                @break
+                          @endswitch
+                        </div>
                       </div>
                       <div>
                         <button class="btn btn-primary" todoId="{{$todo->id}}">Excluir</button>
@@ -58,9 +71,9 @@
                     </div>
                   </div>
                   <div>
-                    <div class="d-flex flex-column border border-success m-3">
+                    <div class="d-flex flex-column border border-success m-3" id="tasks-container">
                       @foreach ($todo->tasks as $task)
-                        <div class="d-flex flex-row justify-content-between">
+                        <div id="task-{{@$task->id}}-container" class="d-flex flex-row justify-content-between">
                           <div>
                             <input type="checkbox" @php if ($task->completed){echo "checked";} @endphp>
                             {{$task->title}}
@@ -128,7 +141,7 @@
                 <form method="POST" action="{{route('task.new')}}" id="create-task-form">
                   <input name="_token" type="hidden" value="{{ csrf_token() }}"/>
                   <div class="form-group row">
-                    <input type="text" id="todo_id" name="todo_id"> <!-- change to hidden-->
+                    <input type="hidden" id="todo_id" name="todo_id">
                     <label for="todo-title" class="mt-1">Título</label>
                     <input id="todo-title" name="title" type="text" placeholder="Tarefa 1">
                   </div>
@@ -146,14 +159,67 @@
     <script>
       let nextTodoId = null;
       let nextTaskId = null;
-        $("#todo-form").submit(function(e) {
-          //e.preventDefault();
-          buildNewTodo();
+      
+
+        function clearTodoFields(){
+          $("#todo-difficulty").val("0");
+          $("#todo-title").val("");
+          $("todo-description").val("");
+        }
+
+        $('#create-todo-form').submit(async function(e) {
+          e.preventDefault();
+          funcResponse = await $.ajax({
+              data: $(this).serialize(),
+              type: $(this).attr('method'), 
+              url: $(this).attr('action'), 
+              success: function(response) { 
+                  console.log(response.id);
+              }
+          });
+          buildNewTodo(funcResponse);
+          clearTodoFields();
         });
 
-        function buildNewTodo(){
+        function getTodoDifficulty(response){
+          switch(response.difficulty){
+            case "0":
+              return "Fácil";
+              break;
+            case "1":
+              return "Médio";
+              break;
+            case "2":
+              return "Difícil";
+              break;
+          }
+        }
+
+        function buildNewTodo(response){
           $("#todo-container").append(
-            "lorem ipsum dolor"
+            `<div id="todo-` + response.id + `-container" class="m-3 border border-primary">
+                  <div>
+                    <div class= "d-flex flex-row justify-content-between m-2">
+                      <div class="d=flex flex-row">
+                        <input type="checkbox">` +
+                        response.title +
+                        `<div>` +
+                          response.description +
+                        `</div>
+                        <div>` + getTodoDifficulty(response) +
+                        `</div>
+                      </div>
+                      <div>
+                        <button class="btn btn-primary" todoId="`+ response.id + `">Excluir</button>
+                        <button class="btn btn-primary new-task-button" todoId="`+ response.id + `" data-toggle="modal" data-target="#newTaskModal">+</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="d-flex flex-column border border-success m-3" id="tasks-container">
+                    </div>
+                  </div>
+                </div>`
           );
         }
 
@@ -163,6 +229,15 @@
 
         $("#create-task-form").submit(function(e){
           $("#todo_id").val(nextTodoId);
+          $.ajax({
+              data: $(this).serialize(),
+              type: $(this).attr('method'), 
+              url: $(this).attr('action'), 
+              success: function(response) { 
+                  console.log(response);
+              }
+          });
+          return false;
         });
 
 

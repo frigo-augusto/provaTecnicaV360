@@ -14,5 +14,6 @@ class TasksController extends Controller
         $task->todo_id = $request->todo_id;
         $task->completed = false;
         $task->save();
+        return $task;
     }
 }

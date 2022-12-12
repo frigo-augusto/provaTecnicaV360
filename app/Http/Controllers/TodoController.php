@@ -19,5 +19,6 @@ class TodoController extends Controller
         $todo->difficulty = $request->difficulty;
         $todo->completed = false;
         $todo->save();
+        return $todo;
     }
 }
