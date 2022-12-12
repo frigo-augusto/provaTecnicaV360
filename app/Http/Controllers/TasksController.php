@@ -22,4 +22,8 @@ class TasksController extends Controller
         $task->completed = !$task->completed;
         $task->save();
     }
+
+    public function delete(Request $request){
+        Tasks::destroy($request->id);
+    }
 }

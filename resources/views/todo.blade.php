@@ -67,21 +67,21 @@
                         </div>
                       </div>
                       <div>
-                        <button class="btn btn-primary" todoId="{{$todo->id}}">Excluir</button>
+                        <button class="btn btn-primary delete-todo-button" todoId="{{$todo->id}}">Excluir</button>
                         <button class="btn btn-primary new-task-button" todoId="{{$todo->id}}" data-toggle="modal" data-target="#newTaskModal">+</button>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <div class="d-flex flex-column border border-success m-3" id="tasks-todo-{{@$todo->id}}-container">
+                    <div class="d-flex flex-column border border-success m-3" id="task-todo-{{@$todo->id}}-container">
                       @foreach ($todo->tasks as $task)
-                        <div class="d-flex flex-row justify-content-between">
+                        <div class="d-flex flex-row justify-content-between" id="task-{{@$task->id}}-container">
                           <div>
                             <input type="checkbox" @php if ($task->completed){echo "checked";} @endphp taskId={{@$task->id}} class="task-checkbox">
                             {{$task->title}}
                           </div>
                           <div>
-                            <button class="btn btn-primary m-4" taskId="{{$task->id}}">Excluir</button>
+                            <button class="btn btn-primary m-4 delete-task-button" taskId="{{$task->id}}">Excluir</button>
                           </div>
                         </div>
                       @endforeach
@@ -209,7 +209,7 @@
                   <div>
                     <div class= "d-flex flex-row justify-content-between m-2">
                       <div class="d=flex flex-row">
-                        <input type="checkbox" todoId=` + response.id +`class="todo-checkbox">` +
+                        <input type="checkbox" todoId="` + response.id +`" class="todo-checkbox">` +
                         response.title +
                         `<div>` +
                           response.description +
@@ -218,13 +218,13 @@
                         `</div>
                       </div>
                       <div>
-                        <button class="btn btn-primary" todoId="`+ response.id + `">Excluir</button>
+                        <button class="btn btn-primary delete-todo-button" todoId="`+ response.id + `">Excluir</button>
                         <button class="btn btn-primary new-task-button" todoId="`+ response.id + `" data-toggle="modal" data-target="#newTaskModal">+</button>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <div class="d-flex flex-column border border-success m-3" id="tasks-todo-` + response.id + `-container">
+                    <div class="d-flex flex-column border border-success m-3" id="task-todo-` + response.id + `-container">
                     </div>
                   </div>
                 </div>`
@@ -232,9 +232,8 @@
         }
 
         function buildNewTask(response){
-          console.log(nextTodoId);
-          $("#tasks-todo-" + nextTodoId + "-container").append(
-            `<div class="d-flex flex-row justify-content-between">
+          $("#task-todo-" + nextTodoId + "-container").append(
+            `<div class="d-flex flex-row justify-content-between" id="task-` + response.id + `-container">
               <div>
                 <input type="checkbox" taskId=` + response.id + `class="task-checkbox">`+
                 response.title +
@@ -243,10 +242,11 @@
                 <button class="btn btn-primary m-4" taskId=`+ response.id +`>Excluir</button>
               </div>
             </div>`
-          )
+          );
+          console.log("aaaaaaaaa");
         }
 
-        $(".new-task-button").click(function(e){
+        $(".new-task-button").on("click", function(e){
           nextTodoId = $(this).attr('todoId');
         });
 
@@ -267,7 +267,7 @@
           clearTaskFields();
         });
 
-        $(".todo-checkbox").click(function (e){
+        $(".todo-checkbox").on("click", function (e){
           var id = $(this).attr("todoId")
           $.ajax({
             data: {
@@ -278,7 +278,7 @@
           })
         });
 
-        $(".task-checkbox").click(function(e){
+        $(".task-checkbox").on("click", function(e){
           var id = $(this).attr("taskId");
           $.ajax({
             data: {
@@ -289,7 +289,29 @@
           })
         });
 
+        $(".delete-todo-button").on("click", function(e){
+          var id = $(this).attr("todoId");
+          $.ajax({
+            data: {
+              id: id
+            },
+            type: 'DELETE',
+            url: "{{route('todo.delete')}}"
+          });
+          $("#todo-" + id + "-container").remove();
+        });
 
-
+        $(".delete-task-button").on("click", function(e){
+          var id = $(this).attr("taskId");
+          $.ajax({
+            data: {
+              id: id
+            },
+            type: 'DELETE',
+            url: "{{route('task.delete')}}"
+          });
+          $("#task-" + id + "-container").remove();
+        });
+        
     </script>
 </html>

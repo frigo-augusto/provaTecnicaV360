@@ -27,4 +27,8 @@ class TodoController extends Controller
         $todo->completed = !$todo->completed;
         $todo->save();
     }
+
+    public function delete(Request $request){
+        Todo::destroy($request->id);
+    }
 }
